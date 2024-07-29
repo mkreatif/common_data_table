@@ -67,33 +67,35 @@ class Tbl extends StatefulWidget {
   final Map<int, TblAlign> dataAlign, headingAlign;
   final Map<int, TextStyle>? Function(List<String> row)? dataTextStyle;
   final Map<int, TextStyle> headingTextStyle;
-  final bool isSearchAble;
+  final bool isSearchAble, lastColumnAsUID;
   final List<int> disabledDeleteButtons, disabledEditButtons, sortColumn;
 
   final double margin;
-  const Tbl(
-      {super.key,
-      this.title,
-      this.titleBgColor,
-      this.titleStyle,
-      required this.heading,
-      required this.data,
-      this.onEdit,
-      this.onDelete,
-      this.rowBGColor,
-      this.onExportExcel,
-      this.onExportPDF,
-      required this.rowActionButtons,
-      required this.tableActionButtons,
-      required this.dataAlign,
-      required this.headingAlign,
-      this.dataTextStyle,
-      required this.headingTextStyle,
-      required this.isSearchAble,
-      required this.disabledDeleteButtons,
-      required this.disabledEditButtons,
-      required this.sortColumn,
-      required this.margin});
+  const Tbl({
+    super.key,
+    this.title,
+    this.titleBgColor,
+    this.titleStyle,
+    required this.heading,
+    required this.data,
+    this.onEdit,
+    this.onDelete,
+    this.rowBGColor,
+    this.onExportExcel,
+    this.onExportPDF,
+    required this.rowActionButtons,
+    required this.tableActionButtons,
+    required this.dataAlign,
+    required this.headingAlign,
+    this.dataTextStyle,
+    required this.headingTextStyle,
+    required this.isSearchAble,
+    required this.disabledDeleteButtons,
+    required this.disabledEditButtons,
+    required this.sortColumn,
+    required this.margin,
+    required this.lastColumnAsUID,
+  });
 
   @override
   State<Tbl> createState() => _TblState();
@@ -118,6 +120,7 @@ class _TblState extends State<Tbl> {
   int _limit = 10, _from = 0, _page = 1, _sorting = -1;
   bool _isSortAsc = false;
   final List<int> _limitList = [10, 50, 100, 200];
+  List<String> _heading = [];
 
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
@@ -208,6 +211,11 @@ class _TblState extends State<Tbl> {
   void initState() {
     super.initState();
     _data = widget.data;
+    _heading = [...widget.heading];
+    if (widget.lastColumnAsUID) {
+      _heading.removeLast();
+    }
+
     setState(() {});
   }
 
@@ -555,9 +563,9 @@ class _TblState extends State<Tbl> {
                         ? FilledButton(
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStatePropertyAll(tblAction.bgColor),
+                                  WidgetStatePropertyAll(tblAction.bgColor),
                               foregroundColor:
-                                  MaterialStatePropertyAll(tblAction.fgColor),
+                                  WidgetStatePropertyAll(tblAction.fgColor),
                             ),
                             onPressed: tblAction.onTap,
                             child: tblAction.child,
@@ -565,9 +573,9 @@ class _TblState extends State<Tbl> {
                         : FilledButton.icon(
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStatePropertyAll(tblAction.bgColor),
+                                  WidgetStatePropertyAll(tblAction.bgColor),
                               foregroundColor:
-                                  MaterialStatePropertyAll(tblAction.fgColor),
+                                  WidgetStatePropertyAll(tblAction.fgColor),
                             ),
                             onPressed: tblAction.onTap,
                             icon: tblAction.icon!,
@@ -587,7 +595,7 @@ class _TblState extends State<Tbl> {
                         widget.onExportExcel!(excel);
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.green),
+                        backgroundColor: WidgetStatePropertyAll(Colors.green),
                       ),
                       icon: Icon(
                         FontAwesomeIcons.fileExcel,
@@ -611,7 +619,7 @@ class _TblState extends State<Tbl> {
                         widget.onExportPDF!(pdf);
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.red),
+                        backgroundColor: WidgetStatePropertyAll(Colors.red),
                       ),
                       icon: Icon(
                         FontAwesomeIcons.filePdf,
@@ -784,11 +792,10 @@ class _TblState extends State<Tbl> {
                               for (int i = 0;
                                   i < widget.rowActionButtons.length;
                                   i++)
-                                widget.heading.length + i: FixedColumnWidth(73),
-                              widget.heading.length +
-                                      widget.rowActionButtons.length:
+                                _heading.length + i: FixedColumnWidth(73),
+                              _heading.length + widget.rowActionButtons.length:
                                   FixedColumnWidth(70),
-                              widget.heading.length +
+                              _heading.length +
                                   widget.rowActionButtons.length +
                                   1: FixedColumnWidth(70),
                             },
@@ -803,19 +810,19 @@ class _TblState extends State<Tbl> {
                                   ),
                                 ),
                                 children: [
-                                  for (String head in widget.heading) ...[
+                                  /// Render Heading
+                                  for (String head in _heading) ...[
                                     InkWell(
                                       splashColor: Colors.transparent,
                                       hoverColor: Colors.transparent,
                                       focusColor: Colors.transparent,
-                                      onTap: widget.sortColumn.contains(
-                                              widget.heading.indexOf(head))
+                                      onTap: widget.sortColumn
+                                              .contains(_heading.indexOf(head))
                                           ? () {
                                               if (_sorting !=
-                                                  widget.heading
-                                                      .indexOf(head)) {
-                                                _sorting = widget.heading
-                                                    .indexOf(head);
+                                                  _heading.indexOf(head)) {
+                                                _sorting =
+                                                    _heading.indexOf(head);
                                               }
                                               _isSortAsc = !_isSortAsc;
                                               if (_isSortAsc) {
@@ -845,11 +852,10 @@ class _TblState extends State<Tbl> {
                                               child: Text(
                                                 head,
                                                 textAlign: _tblAlignToTextAlign(
-                                                    widget.headingAlign[widget
-                                                        .heading
+                                                    widget.headingAlign[_heading
                                                         .indexOf(head)]),
                                                 style: widget.headingTextStyle[
-                                                        widget.heading
+                                                        _heading
                                                             .indexOf(head)] ??
                                                     TextStyle(
                                                       fontSize: 20.0,
@@ -859,8 +865,7 @@ class _TblState extends State<Tbl> {
                                               ),
                                             ),
                                             if (_sorting ==
-                                                widget.heading
-                                                    .indexOf(head)) ...[
+                                                _heading.indexOf(head)) ...[
                                               Icon(_isSortAsc
                                                   ? FontAwesomeIcons.arrowDown
                                                   : FontAwesomeIcons.arrowUp)
@@ -870,6 +875,8 @@ class _TblState extends State<Tbl> {
                                       ),
                                     ),
                                   ],
+
+                                  /// Render Action Button Heading
                                   for (RowActionButton act
                                       in widget.rowActionButtons) ...[
                                     Container(
@@ -903,6 +910,8 @@ class _TblState extends State<Tbl> {
                                   ]
                                 ],
                               ),
+
+                              /// Rendering Data
                               if (_data.isNotEmpty) ...[
                                 for (int j = _from;
                                     j <
@@ -918,7 +927,10 @@ class _TblState extends State<Tbl> {
                                     ),
                                     children: [
                                       for (int i = 0;
-                                          i < _data[j].length;
+                                          i <
+                                              (widget.lastColumnAsUID
+                                                  ? _data[j].length - 1
+                                                  : _data[j].length);
                                           i++) ...[
                                         Container(
                                           width: double.infinity,
@@ -1015,6 +1027,8 @@ class _TblState extends State<Tbl> {
                               ],
                             ],
                           ),
+
+                          /// Show Empty Indicator
                           if (_data.isEmpty) ...[
                             Container(
                               padding: EdgeInsets.all(10),
@@ -1055,7 +1069,7 @@ class _TblState extends State<Tbl> {
                           ),
                           if (_sorting >= 0)
                             Text(
-                              "  (Sorting ${widget.heading[_sorting]} ${_isSortAsc ? "Ascending" : "Descending"})",
+                              "  (Sorting ${_heading[_sorting]} ${_isSortAsc ? "Ascending" : "Descending"})",
                             ),
                           Spacer(),
                           Material(

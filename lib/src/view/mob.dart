@@ -62,7 +62,7 @@ class Mob extends StatefulWidget {
   final List<TableActionButton> tableActionButtons;
   final Map<int, TextStyle>? Function(List<String> row)? dataTextStyle;
   final Map<int, TextStyle> headingTextStyle;
-  final bool isSearchAble;
+  final bool isSearchAble, lastColumnAsUID;
   final List<int> disabledDeleteButtons, disabledEditButtons;
 
   const Mob({
@@ -82,6 +82,7 @@ class Mob extends StatefulWidget {
     required this.isSearchAble,
     required this.disabledDeleteButtons,
     required this.disabledEditButtons,
+    required this.lastColumnAsUID,
   });
 
   @override
@@ -151,9 +152,9 @@ class _MobState extends State<Mob> {
                       ? FilledButton(
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStatePropertyAll(tblAction.bgColor),
+                                WidgetStatePropertyAll(tblAction.bgColor),
                             foregroundColor:
-                                MaterialStatePropertyAll(tblAction.fgColor),
+                                WidgetStatePropertyAll(tblAction.fgColor),
                           ),
                           onPressed: tblAction.onTap,
                           child: tblAction.child,
@@ -161,9 +162,9 @@ class _MobState extends State<Mob> {
                       : FilledButton.icon(
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStatePropertyAll(tblAction.bgColor),
+                                WidgetStatePropertyAll(tblAction.bgColor),
                             foregroundColor:
-                                MaterialStatePropertyAll(tblAction.fgColor),
+                                WidgetStatePropertyAll(tblAction.fgColor),
                           ),
                           onPressed: tblAction.onTap,
                           icon: tblAction.icon!,

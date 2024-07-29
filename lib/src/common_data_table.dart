@@ -66,6 +66,8 @@ class CommonDataTable extends StatelessWidget {
   final Map<int, TextStyle>? Function(List<String> row)? dataTextStyle;
   final Map<int, TextStyle> headingTextStyle;
   final bool isSearchAble;
+  /// if last column as UID set true, then last column will be hidden
+  final bool lastColumnAsUID;
   final List<int> disabledDeleteButtons, disabledEditButtons, sortColumn;
 
   final double margin;
@@ -93,6 +95,7 @@ class CommonDataTable extends StatelessWidget {
     this.titleStyle,
     this.margin = 20,
     this.rowBGColor,
+    this.lastColumnAsUID = false
   }) : super(key: key);
 
   @override
@@ -123,6 +126,7 @@ class CommonDataTable extends StatelessWidget {
             disabledEditButtons: disabledEditButtons,
             sortColumn: sortColumn,
             margin: margin,
+            lastColumnAsUID: lastColumnAsUID,
           );
         } else {
           return Mob(
@@ -142,6 +146,7 @@ class CommonDataTable extends StatelessWidget {
             isSearchAble: isSearchAble,
             disabledDeleteButtons: disabledDeleteButtons,
             disabledEditButtons: disabledEditButtons,
+            lastColumnAsUID: lastColumnAsUID,
           );
         }
       },
