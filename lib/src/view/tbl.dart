@@ -960,6 +960,11 @@ class _TblState extends State<Tbl> {
                                                 : () {
                                                     act.onTap(_data
                                                         .indexOf(_data[j]));
+                                                    if (act.onTapTrigered !=
+                                                        null) {
+                                                      act.onTapTrigered!(
+                                                          _data[j]);
+                                                    }
                                                   },
                                           ),
                                         )

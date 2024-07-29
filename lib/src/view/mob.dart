@@ -290,6 +290,9 @@ class _MobState extends State<Mob> {
                               ? null
                               : () {
                                   act.onTap(_data.indexOf(data));
+                                  if (act.onTapTrigered != null) {
+                                    act.onTapTrigered!(data);
+                                  }
                                 },
                         ),
                       )

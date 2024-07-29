@@ -6,6 +6,7 @@ class RowActionButton {
   final Color? color;
   final bool? Function(int index)? isDisabled;
   final Function(int index) onTap;
+  final Function(dynamic data)? onTapTrigered;
 
   RowActionButton({
     required this.icon,
@@ -13,5 +14,6 @@ class RowActionButton {
     this.tooltip,
     this.color,
     this.isDisabled,
+    this.onTapTrigered
   });
 }
